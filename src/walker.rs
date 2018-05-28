@@ -1,35 +1,34 @@
+use std::collections::VecDeque;
 use std::fs::read_dir;
-use std::mem;
 use std::path::{Path, PathBuf};
 
 pub struct TreeWalker {
-    q: Box<Iterator<Item = PathBuf>>,
+    q: VecDeque<PathBuf>,
 }
 
 impl Iterator for TreeWalker {
     type Item = PathBuf;
 
     fn next(&mut self) -> Option<Self::Item> {
-        match self.q.next() {
-            Some(current) => {
-                if let Ok(children) = read_dir(&current) {
-                    let children = children
+        self.q.pop_front().map(|current| {
+            if let Ok(children) = read_dir(&current)
+                .map(|children| {
+                    children
                         .into_iter()
                         .filter_map(|c| c.ok())
-                        .map(|c| c.path());
-                    let q = mem::replace(&mut self.q, Box::new(Vec::new().into_iter()));
-                    self.q = Box::new(q.chain(children));
+                        .map(|c| c.path())
+                }) {
+                    self.q.extend(children);
                 }
-                Some(current)
-            }
-            None => None,
-        }
+            current
+        })
     }
 }
 
 impl TreeWalker {
     pub fn new(root: &Path) -> TreeWalker {
-        let q = Box::new(vec![PathBuf::from(root)].into_iter());
+        let mut q = VecDeque::with_capacity(1);
+        q.push_back(PathBuf::from(root));
 
         TreeWalker { q }
     }
