@@ -8,3 +8,4 @@ description = "Walks over a directory tree, calls `file` on each file, copies it
 clap = "2.31.1"
 failure = "0.1.1"
 failure_derive = "0.1.1"
+magic = "0.12.2"

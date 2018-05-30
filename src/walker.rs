@@ -11,15 +11,15 @@ impl Iterator for TreeWalker {
 
     fn next(&mut self) -> Option<PathBuf> {
         let current = self.q.pop_front();
-        let children = current
-            .clone()
-            .and_then(|current| read_dir(&current).ok());
+        let children = current.clone().and_then(|current| read_dir(&current).ok());
 
         if let Some(children) = children {
-            self.q.extend(children
-                          .into_iter()
-                          .filter_map(|c| c.ok())
-                          .map(|c| c.path()));
+            self.q.extend(
+                children
+                    .into_iter()
+                    .filter_map(|c| c.ok())
+                    .map(|c| c.path()),
+            );
         }
 
         current

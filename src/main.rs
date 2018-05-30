@@ -1,5 +1,6 @@
+extern crate failure;
 extern crate file_extender;
 
-fn main() {
-    file_extender::run();
+fn main() -> Result<(), failure::Error> {
+    file_extender::run()
 }

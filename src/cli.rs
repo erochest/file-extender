@@ -1,7 +1,17 @@
 use clap::{Arg, ArgMatches};
 
-pub fn parse_args(current_dir: &str) -> ArgMatches {
+pub fn parse_args<'a>(current_dir: &'a str, default_magic: &'a str) -> ArgMatches<'a> {
     app_from_crate!()
+        .arg(
+            Arg::with_name("magic_file")
+                .short("m")
+                .long("magic")
+                .default_value(&default_magic)
+                .value_name("MAGIC_FILE")
+                .takes_value(true)
+                .required(false)
+                .help("The location of the magic file."),
+        )
         .arg(
             Arg::with_name("destination_dir")
                 .short("d")
